@@ -127,5 +127,5 @@ third party notices document.
 ### Contributing
 Full details are available in our [CONTRIBUTING.md](CONTRIBUTING.md) file.
 We'd love to get your contributions! Keep in mind when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project.
-To execute our corporate CLA, which is required if your contribution is on behalf of a company, or if you have any questions, please drop us an email at open-source@newrelic.com. 
+To execute our corporate CLA, which is required if your contribution is on behalf of a company, or if you have any questions, please drop us an email at opensource@newrelic.com. 
 
