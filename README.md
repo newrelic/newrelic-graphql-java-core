@@ -9,15 +9,15 @@ This library provides helpers for integrating [graphql-java](https://github.com/
 ### Maven
 ```
     <dependency>
-      <groupId>com.newrelic</groupId>
-      <artifactId>newrelic-graphql-java-core</artifactId>
+      <groupId>com.newrelic.graphql</groupId>
+      <artifactId>core</artifactId>
       <version>0.1.0</version>
     </dependency>
 ```
 
 ### Gradle
 ```
-compile("com.newrelic:newrelic-graphql-java-core:0.1.0")
+compile("com.newrelic.graphql:core:0.1.0")
 ```
 
 ## Usage
