@@ -1,0 +1,3 @@
+com.newrelic.graphql.mapper
+com.newrelic.graphql.schema
+com.newrelic.graphql.schema.scalars
