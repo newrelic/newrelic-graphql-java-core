@@ -3,6 +3,7 @@
 /build
 /classes
 /out
+/tmp
 *.swp
 *.iml
 *.iws
