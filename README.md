@@ -22,6 +22,8 @@ compile("com.newrelic.graphql:core:0.1.0")
 
 ## Usage
 
+Version specific Javadocs can be found [here](https://newrelic.github.io/newrelic-graphql-java-core/docs/v0.1.0/).
+
 ### [`SimpleGraphQLBuilder`](https://github.com/newrelic/newrelic-graphql-java-core/blob/master/src/main/java/com/newrelic/graphql/schema/SimpleGraphQLBuilder.java)
 
 `SimpleGraphQLBuilder` provides cleaner wireup of an executable schema. It expects a `Reader` on construction with your GraphQL schema contents and then supports fluent building for further configuration.
@@ -100,9 +102,7 @@ To opt out of auto-registration of these predefined scalars, use the `usePredefi
 
 ### Building
 
-**TODO: Link to CI**
-
-The project uses gradle 5 for building, and the gradle wrapper is provided.
+The project uses Gradle 6 and GitHub Actions for building.
 
 To compile, run the tests and build the jars:
 
@@ -121,7 +121,7 @@ be applied automatically before commits by moving it into `.git/hooks/pre-commit
 newrelic-graphql-java-core is licensed under the Apache 2.0 License.
 
 newrelic-graphql-java-core also uses source code from third party libraries.
-Full details on which libraries are used and the terms under which they are licensed can be found in the 
+Full details on which libraries are used and the terms under which they are licensed can be found in the
 third party notices document.
 
 ### Contributing
