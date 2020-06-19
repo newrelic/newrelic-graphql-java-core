@@ -13,6 +13,7 @@ import graphql.schema.CoercingParseValueException;
 import graphql.schema.CoercingSerializeException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -114,6 +115,16 @@ public abstract class NumberCoercing<T extends NumberCoercing.NumberWrapper>
         dec = new BigDecimal(n.doubleValue());
       }
       return dec;
+    }
+
+    // Support method for deserialization from instances of our own type
+    protected static Number rawValueFromProps(Map<String, Object> props) {
+      Number value = (Number) props.get("rawValue");
+      if (value == null) {
+        throw new IllegalArgumentException("Can't deserialize from properties missing 'rawValue'");
+      }
+
+      return value;
     }
 
     @Override
