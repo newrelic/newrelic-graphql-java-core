@@ -11,18 +11,18 @@ This library provides helpers for integrating [graphql-java](https://github.com/
     <dependency>
       <groupId>com.newrelic.graphql</groupId>
       <artifactId>core</artifactId>
-      <version>0.1.0</version>
+      <version>0.1.1</version>
     </dependency>
 ```
 
 ### Gradle
 ```
-compile("com.newrelic.graphql:core:0.1.0")
+compile("com.newrelic.graphql:core:0.1.1")
 ```
 
 ## Usage
 
-Version specific Javadocs can be found [here](https://newrelic.github.io/newrelic-graphql-java-core/docs/v0.1.0/).
+Version specific Javadocs can be found [here](https://newrelic.github.io/newrelic-graphql-java-core/docs/v0.1.1/).
 
 ### [`SimpleGraphQLBuilder`](https://github.com/newrelic/newrelic-graphql-java-core/blob/master/src/main/java/com/newrelic/graphql/schema/SimpleGraphQLBuilder.java)
 
