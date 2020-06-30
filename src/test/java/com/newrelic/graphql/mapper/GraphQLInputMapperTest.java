@@ -5,6 +5,7 @@
 package com.newrelic.graphql.mapper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import graphql.Scalars;
 import graphql.schema.GraphQLDirective;
@@ -19,9 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class GraphQLInputMapperTest {
 
@@ -31,8 +30,6 @@ public class GraphQLInputMapperTest {
       GraphQLInputObjectType.newInputObject().name("MyObject").build();
 
   private GraphQLEnumType myEnumType = GraphQLEnumType.newEnum().name("MyEnum").build();
-
-  @Rule public ExpectedException thrown = ExpectedException.none();
 
   @Before
   public void setup() {
@@ -185,12 +182,15 @@ public class GraphQLInputMapperTest {
   }
 
   @Test
-  public void wrench() throws ClassNotFoundException {
+  public void wrench() {
     GraphQLDirective unsupportedGraphQLType = GraphQLDirective.newDirective().name("bunk").build();
 
-    thrown.expect(ClassCastException.class);
-
-    // If we don't assign the value the code gets skipped so it's not actually unused!!
-    String failure = mapper.convert(new Integer(42), unsupportedGraphQLType);
+    assertThrows(
+        ClassCastException.class,
+        () -> {
+          // If we don't assign the value the code gets skipped so it's not actually unused!!
+          Integer i = 42;
+          String failure = mapper.convert(i, unsupportedGraphQLType);
+        });
   }
 }

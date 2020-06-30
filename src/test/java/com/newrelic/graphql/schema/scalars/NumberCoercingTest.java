@@ -5,6 +5,7 @@
 package com.newrelic.graphql.schema.scalars;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import graphql.language.FloatValue;
 import graphql.language.IntValue;
@@ -16,16 +17,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
 public class NumberCoercingTest {
-
-  @Rule public ExpectedException thrown = ExpectedException.none();
 
   @Parameterized.Parameters(name = "{1}")
   public static Collection<Object[]> data() {
@@ -72,16 +69,14 @@ public class NumberCoercingTest {
 
   @Test
   public void parseValueInvalid() {
-    thrown.expect(CoercingParseValueException.class);
-
-    coercing.parseValue("111111111111111111111111111111");
+    assertThrows(
+        CoercingParseValueException.class,
+        () -> coercing.parseValue("111111111111111111111111111111"));
   }
 
   @Test
   public void parseValueNull() {
-    thrown.expect(CoercingParseValueException.class);
-
-    coercing.parseValue(null);
+    assertThrows(CoercingParseValueException.class, () -> coercing.parseValue(null));
   }
 
   @Test
@@ -110,17 +105,17 @@ public class NumberCoercingTest {
 
   @Test
   public void parseLiteralInvalid() {
-    thrown.expect(CoercingParseLiteralException.class);
-
-    StringValue literal = new StringValue("not a number");
-    coercing.parseLiteral(literal);
+    assertThrows(
+        CoercingParseLiteralException.class,
+        () -> {
+          StringValue literal = new StringValue("not a number");
+          coercing.parseLiteral(literal);
+        });
   }
 
   @Test
   public void parseLiteralNull() {
-    thrown.expect(CoercingParseLiteralException.class);
-
-    coercing.parseLiteral(null);
+    assertThrows(CoercingParseLiteralException.class, () -> coercing.parseLiteral(null));
   }
 
   @Test
@@ -131,15 +126,11 @@ public class NumberCoercingTest {
 
   @Test
   public void serializeInvalidType() {
-    thrown.expect(CoercingSerializeException.class);
-
-    coercing.serialize(new Object());
+    assertThrows(CoercingSerializeException.class, () -> coercing.serialize(new Object()));
   }
 
   @Test
   public void serializeNull() {
-    thrown.expect(CoercingSerializeException.class);
-
-    coercing.serialize(null);
+    assertThrows(CoercingSerializeException.class, () -> coercing.serialize(null));
   }
 }
