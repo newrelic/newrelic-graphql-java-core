@@ -26,7 +26,7 @@ Version specific Javadocs can be found [here](https://newrelic.github.io/newreli
 
 ### [`SimpleGraphQLBuilder`](https://github.com/newrelic/newrelic-graphql-java-core/blob/master/src/main/java/com/newrelic/graphql/schema/SimpleGraphQLBuilder.java)
 
-`SimpleGraphQLBuilder` provides cleaner wireup of an executable schema. It expects a `Reader` on construction with your GraphQL schema contents and then supports fluent building for further configuration.
+`SimpleGraphQLBuilder` provides cleaner wireup of an executable schema. It expects a `Reader` with your GraphQL schema contents. Further configuration is done with a fluent interface.
 
 ```java
     Reader schemaReader = //... Read your GraphQL SDL from somewhere
@@ -42,14 +42,14 @@ Version specific Javadocs can be found [here](https://newrelic.github.io/newreli
         .build()
 ```
 
-Some defaults are provided by the builder:
+Defauls from the builder:
 
-* `fetcher` lets you associate a `DataFetcher` implementation with a GraphQL type and field definition
+* The `fetcher` method associates a `DataFetcher` implementation with a GraphQL type and field definition
 * Unregistered scalars are defaulted to a String coercion for simplicity of starting up.
-* The default type resolver expects result class names to align with GraphQL types. You only need to override this if your scheme is different._
+* The default type resolver expects result class names to align with GraphQL types. You only need to override this if your scheme is different.
 * Defaults exception handler to `SimpleDataFetcherExceptionHandler` from the `graphql-java` library
 
-If you find that you can't access functionality through the fluent interface, you can provide a `configure` callback to access the underlying `graphql-java` objects.
+If functionality isn't available on the the fluent interface, a `configure` callback provides access the underlying `graphql-java` objects.
 
 ```java
     GraphQL graphql = new SimpleGraphQLBuilder(schemaReader)
@@ -61,8 +61,7 @@ If you find that you can't access functionality through the fluent interface, yo
 
 ### [`GraphQLInputMapper`](https://github.com/newrelic/newrelic-graphql-java-core/blob/master/src/main/java/com/newrelic/graphql/mapper/GraphQLInputMapper.java)
 
-`GraphQLInputMapper` provides assistance in mapping incoming input types to real Java classes. It relies on Jackson, and configures to work between the `graphql-java` types and your custom classes.
-SimpleDataFetcherExceptionHandler
+`GraphQLInputMapper` assists in handling incoming input types. It relies on Jackson, and configures to work between the `graphql-java` types and your custom classes.
 
 ```java
     GraphQLInputMapper mapper = new GraphQLInputMapper("com.newrelic.my.model");
@@ -77,14 +76,14 @@ SimpleDataFetcherExceptionHandler
 
 ### [Custom Scalars](https://github.com/newrelic/newrelic-graphql-java-core/tree/master/src/main/java/com/newrelic/graphql/schema/scalars)
 
-At New Relic we've found a lot of use in supporting a variety of scalars, especially around time. These predefined scalars are available and registered by default for use in your application. To use these, simply include the related scalar declaration as below in your GraphQL schema file, then use the related Java class in your queries or mutations.
+At New Relic we've found lots of uses for custom scalars, especially around time. These predefined scalars are available and registered by default for use in your application. To use these, simply include the related scalar declaration as below in your GraphQL schema file, then use the related Java class in your queries or mutations.
 
-* `scalar EpochMilliseconds` - maps to wrapper around Java Instant
-* `scalar EpochSeconds` - maps to wrapper around Java Instant
-* `scalar Milliseconds` - maps to wrapper around Java Duration
-* `scalar Seconds` - maps to wrapper around Java Duration
-* `scalar Minutes` - maps to wrapper around Java Duration
-* `scalar DateTime` - maps to ZonedDateTime from ISO8601 compatible strings
+* `scalar EpochMilliseconds` - maps to wrapper around Java `Instant`
+* `scalar EpochSeconds` - maps to wrapper around Java `Instant`
+* `scalar Milliseconds` - maps to wrapper around Java `Duration`
+* `scalar Seconds` - maps to wrapper around Java `Duration`
+* `scalar Minutes` - maps to wrapper around Java `Duration`
+* `scalar DateTime` - maps to `ZonedDateTime` from ISO 8601 compatible strings
 
 ```java
     public T get(DataFetchingEnvironment environment) throws Exception {
