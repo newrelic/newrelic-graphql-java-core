@@ -6,11 +6,7 @@ package com.newrelic.graphql.mapper;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import graphql.schema.GraphQLEnumType;
-import graphql.schema.GraphQLInputObjectType;
-import graphql.schema.GraphQLList;
-import graphql.schema.GraphQLNonNull;
-import graphql.schema.GraphQLType;
+import graphql.schema.*;
 import java.util.List;
 
 /**
@@ -77,11 +73,11 @@ public class GraphQLInputMapper {
     } else if (type instanceof GraphQLInputObjectType) {
       return mapper
           .getTypeFactory()
-          .constructType(classInPackage(packageName, ((GraphQLInputObjectType) type).getName()));
+          .constructType(classInPackage(packageName, (GraphQLNamedType) type));
     } else if (type instanceof GraphQLEnumType) {
       return mapper
           .getTypeFactory()
-          .constructType(classInPackage(packageName, ((GraphQLEnumType) type).getName()));
+          .constructType(classInPackage(packageName, (GraphQLNamedType) type));
     } else if (type instanceof GraphQLNonNull) {
       return getType(((GraphQLNonNull) type).getWrappedType());
     }
@@ -89,8 +85,9 @@ public class GraphQLInputMapper {
     return null;
   }
 
-  private Class<?> classInPackage(String packageName, String name) throws ClassNotFoundException {
-    String className = String.format("%s.%s", packageName, name);
+  private Class<?> classInPackage(String packageName, GraphQLNamedType type)
+      throws ClassNotFoundException {
+    String className = String.format("%s.%s", packageName, type.getName());
     return Class.forName(className);
   }
 }
