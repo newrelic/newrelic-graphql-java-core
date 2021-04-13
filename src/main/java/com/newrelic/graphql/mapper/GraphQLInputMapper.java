@@ -75,9 +75,13 @@ public class GraphQLInputMapper {
         return mapper.getTypeFactory().constructCollectionType(List.class, innerType);
       }
     } else if (type instanceof GraphQLInputObjectType) {
-      return mapper.getTypeFactory().constructType(classInPackage(packageName, type));
+      return mapper
+          .getTypeFactory()
+          .constructType(classInPackage(packageName, ((GraphQLInputObjectType) type).getName()));
     } else if (type instanceof GraphQLEnumType) {
-      return mapper.getTypeFactory().constructType(classInPackage(packageName, type));
+      return mapper
+          .getTypeFactory()
+          .constructType(classInPackage(packageName, ((GraphQLEnumType) type).getName()));
     } else if (type instanceof GraphQLNonNull) {
       return getType(((GraphQLNonNull) type).getWrappedType());
     }
@@ -85,9 +89,8 @@ public class GraphQLInputMapper {
     return null;
   }
 
-  private Class<?> classInPackage(String packageName, GraphQLType type)
-      throws ClassNotFoundException {
-    String className = String.format("%s.%s", packageName, type.getName());
+  private Class<?> classInPackage(String packageName, String name) throws ClassNotFoundException {
+    String className = String.format("%s.%s", packageName, name);
     return Class.forName(className);
   }
 }

@@ -8,11 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 import graphql.Scalars;
-import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLEnumType;
 import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
+import graphql.schema.GraphQLType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -183,10 +183,11 @@ public class GraphQLInputMapperTest {
 
   @Test
   public void wrench() {
-    GraphQLDirective unsupportedGraphQLType = GraphQLDirective.newDirective().name("bunk").build();
+    GraphQLType unsupportedGraphQLType =
+        GraphQLInputObjectType.newInputObject().name("bunk").build();
 
     assertThrows(
-        ClassCastException.class,
+        ClassNotFoundException.class,
         () -> {
           // If we don't assign the value the code gets skipped so it's not actually unused!!
           Integer i = 42;

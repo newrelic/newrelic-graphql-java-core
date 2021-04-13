@@ -98,8 +98,7 @@ public class SimpleGraphQLBuilder {
     }
 
     SchemaGenerator schemaGenerator = new SchemaGenerator();
-    SchemaGenerator.Options options =
-        SchemaGenerator.Options.defaultOptions().enforceSchemaDirectives(false);
+    SchemaGenerator.Options options = SchemaGenerator.Options.defaultOptions();
     GraphQLSchema schema =
         schemaGenerator.makeExecutableSchema(options, typeRegistry, runtimeWiringBuilder.build());
 
