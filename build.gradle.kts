@@ -3,6 +3,7 @@ val jacksonCoreVersion = project.findProperty("jackson-core.version") as String
 val jacksonDatabindVersion = project.findProperty("jackson-databind.version") as String
 val junitVersion = project.findProperty("junit.version") as String
 val mockitoVersion = project.findProperty("mockito.version") as String
+val slf4jVersion = project.findProperty("slf4j.version") as String
 
 plugins {
     id("java-library")
@@ -24,6 +25,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:${jacksonCoreVersion}")
     implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}")
     implementation("com.graphql-java:graphql-java:${graphqlVersion}")
+    implementation("org.slf4j:slf4j-api:${slf4jVersion}")
 
     testImplementation("junit:junit:${junitVersion}")
     testImplementation("org.mockito:mockito-core:${mockitoVersion}")
