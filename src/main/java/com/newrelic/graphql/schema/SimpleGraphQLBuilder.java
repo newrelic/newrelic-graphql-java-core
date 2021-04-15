@@ -25,8 +25,6 @@ import graphql.schema.idl.TypeDefinitionRegistry;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This builder provides a simple fluent interface for wiring up your schema for runtime execution.
@@ -52,8 +50,6 @@ import org.slf4j.LoggerFactory;
  * </pre>
  */
 public class SimpleGraphQLBuilder {
-  static Logger logger = LoggerFactory.getLogger(SimpleGraphQLBuilder.class);
-
   private static final SchemaParser schemaParser = new SchemaParser();
   private static final DefaultTypeResolver defaultTypeResolver = new DefaultTypeResolver();
 
@@ -211,8 +207,6 @@ public class SimpleGraphQLBuilder {
           String[] parts = key.split("[.]");
           if (parts.length == 2) {
             builder.type(parts[0], t -> t.dataFetcher(parts[1], fetcher));
-          } else {
-            logger.warn("Unexpected field specification '{}'", key);
           }
         });
   }
