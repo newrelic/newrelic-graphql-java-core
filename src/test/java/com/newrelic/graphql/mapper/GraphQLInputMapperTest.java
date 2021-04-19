@@ -13,8 +13,6 @@ import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLType;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,16 +42,6 @@ public class GraphQLInputMapperTest {
     assertEquals(Double.valueOf(31.4), mapper.convert(31.4, Scalars.GraphQLFloat));
     assertEquals(true, mapper.convert(true, Scalars.GraphQLBoolean));
     assertEquals("", mapper.convert("", Scalars.GraphQLID));
-    assertEquals(Long.valueOf(1000), mapper.convert((long) 1000, Scalars.GraphQLLong));
-    assertEquals(Short.valueOf((short) 4), mapper.convert((short) 4, Scalars.GraphQLShort));
-    assertEquals(Byte.valueOf((byte) 2), mapper.convert((byte) 2, Scalars.GraphQLByte));
-    assertEquals(
-        BigInteger.valueOf(2000),
-        mapper.convert(BigInteger.valueOf(2000), Scalars.GraphQLBigInteger));
-    assertEquals(
-        BigDecimal.valueOf(3000),
-        mapper.convert(BigDecimal.valueOf(3000), Scalars.GraphQLBigDecimal));
-    assertEquals(Character.valueOf('j'), mapper.convert('j', Scalars.GraphQLChar));
   }
 
   @Test

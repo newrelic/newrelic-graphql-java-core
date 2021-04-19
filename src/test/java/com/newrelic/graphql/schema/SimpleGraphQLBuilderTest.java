@@ -9,10 +9,6 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 import com.newrelic.graphql.schema.scalars.EpochMilliseconds;
 import com.newrelic.graphql.schema.scalars.EpochSeconds;
@@ -40,10 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
 
 public class SimpleGraphQLBuilderTest {
 
@@ -68,19 +61,6 @@ public class SimpleGraphQLBuilderTest {
               + "union MyUnion = MyObject | AnotherObject "
               + "type Query { read: MyUnion  list: [MyUnion] }");
 
-  // Some of our tests mess with the logger so hang onto it for our protection in other tests...
-  private Logger savedLogger;
-
-  @Before
-  public void setup() {
-    savedLogger = SimpleGraphQLBuilder.logger;
-  }
-
-  @After
-  public void teardown() {
-    SimpleGraphQLBuilder.logger = savedLogger;
-  }
-
   @Test
   public void buildWithFetcherMap() {
     DataFetcher fetcher = env -> "yup";
@@ -102,30 +82,6 @@ public class SimpleGraphQLBuilderTest {
 
     ExecutionResult response = graphQL.execute("query { read }");
     assertThat(response.getData(), is(expectedResponse("read", "yup")));
-  }
-
-  @Test
-  public void warnsOnTooManyPartsInFieldSpecification() {
-    SimpleGraphQLBuilder.logger = mock(Logger.class);
-
-    Map<String, DataFetcher> fetchers = new HashMap<>();
-    fetchers.put("Query.read.too.many.dots", env -> "yup");
-
-    new SimpleGraphQLBuilder(schema).fetchers(fetchers).build();
-
-    verify(SimpleGraphQLBuilder.logger).warn(anyString(), contains("Query.read.too.many.dots"));
-  }
-
-  @Test
-  public void warnsOnTooFewPartsInFieldSpecification() {
-    SimpleGraphQLBuilder.logger = mock(Logger.class);
-
-    Map<String, DataFetcher> fetchers = new HashMap<>();
-    fetchers.put("Query", env -> "yup");
-
-    new SimpleGraphQLBuilder(schema).fetchers(fetchers).build();
-
-    verify(SimpleGraphQLBuilder.logger).warn(anyString(), contains("Query"));
   }
 
   @Test
