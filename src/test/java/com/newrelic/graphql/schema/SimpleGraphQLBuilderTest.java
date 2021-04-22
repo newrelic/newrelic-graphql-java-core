@@ -22,6 +22,7 @@ import graphql.Scalars;
 import graphql.execution.DataFetcherExceptionHandlerParameters;
 import graphql.execution.DataFetcherExceptionHandlerResult;
 import graphql.execution.SimpleDataFetcherExceptionHandler;
+import graphql.scalar.GraphqlStringCoercing;
 import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLScalarType;
 import graphql.schema.TypeResolver;
@@ -46,6 +47,7 @@ public class SimpleGraphQLBuilderTest {
               + "scalar Stringy "
               + "scalar Numbery "
               + "type Query { read: Stringy } "
+              + "\n\"Muted\"\n"
               + "type Mutation { write(str: Stringy, num: Numbery): Numbery } ");
 
   final StringReader schemaWithInterfaces =
@@ -427,7 +429,7 @@ public class SimpleGraphQLBuilderTest {
   }
 
   @Test
-  public void scalarDescriptions() {
+  public void scalarDefaultsHaveDescriptions() {
     GraphQL graphQL = new SimpleGraphQLBuilder(schema).build();
 
     String query =
@@ -453,6 +455,33 @@ public class SimpleGraphQLBuilderTest {
     numberyDescription.put("name", "Numbery");
     numberyDescription.put("description", null);
     assertThat(types, hasItem(numberyDescription));
+  }
+
+  @Test
+  public void scalarsRegisteredKeepDescriptions() {
+    GraphQLScalarType stringy =
+        GraphQLScalarType.newScalar().name("Stringy").coercing(new GraphqlStringCoercing()).build();
+
+    GraphQL graphQL = new SimpleGraphQLBuilder(schema).scalar(stringy.getName(), stringy).build();
+
+    String query =
+        "query IntrospectionQuery { "
+            + "  __schema { "
+            + "    types { "
+            + "      name "
+            + "      description "
+            + "    } "
+            + "  } "
+            + "}";
+
+    ExecutionResult response = graphQL.execute(query);
+    Map<String, Map<String, List<Map<String, String>>>> datum = response.getData();
+    List<Map<String, String>> types = datum.get("__schema").get("types");
+
+    HashMap<String, String> stringyDescription = new HashMap<>();
+    stringyDescription.put("name", "Stringy");
+    stringyDescription.put("description", "Stringy description");
+    assertThat(types, hasItem(stringyDescription));
   }
 
   private void assertErrorWithMessage(ExecutionResult response) {

@@ -230,11 +230,22 @@ public class SimpleGraphQLBuilder {
 
                 // Fall back to default scalar definition
                 if (scalarType == null) {
-                  String description =
-                      typeDefinition.getDescription() != null
-                          ? typeDefinition.getDescription().content
-                          : null;
-                  scalarType = defaultScalarType(name, description);
+                  scalarType = defaultScalarType(name);
+                }
+
+                // We may have a description on
+                // 1) the explicit type registered with us in code or
+                // 2) the type definition itself (i.e. from the GraphQL SDL file)
+                //
+                // Either way, apply that before building the runtime type here
+                String description = scalarType.getDescription();
+                if (description == null && typeDefinition.getDescription() != null) {
+                  description = typeDefinition.getDescription().content;
+                }
+
+                if (description != null) {
+                  scalarType =
+                      GraphQLScalarType.newScalar(scalarType).description(description).build();
                 }
 
                 builder.scalar(scalarType);
@@ -261,10 +272,9 @@ public class SimpleGraphQLBuilder {
     builder.type(typeName, t -> t.typeResolver(resolver));
   }
 
-  private static GraphQLScalarType defaultScalarType(String name, String description) {
+  private static GraphQLScalarType defaultScalarType(String name) {
     return GraphQLScalarType.newScalar()
         .name(name)
-        .description(description)
         .coercing(Scalars.GraphQLString.getCoercing())
         .build();
   }
