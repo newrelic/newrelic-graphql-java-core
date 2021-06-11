@@ -9,7 +9,7 @@ import java.time.ZonedDateTime;
 /**
  * Coercion support for {@code DateTime} custom scalar class.
  *
- * <p>Serializes/deserializes as string representation of a {@code ZonedDataTime} instance.
+ * <p>Serializes/deserializes as string representation of a {@code ZonedDateTime} instance.
  */
 public class DateTimeCoercing extends StringCoercing<DateTime> {
 
