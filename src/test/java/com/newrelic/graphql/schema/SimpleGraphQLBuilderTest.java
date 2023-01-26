@@ -45,6 +45,7 @@ public class SimpleGraphQLBuilderTest {
       new StringReader(
           "\"Stringy description\"\n"
               + "scalar Stringy "
+              + "\"Numbery description\" "
               + "scalar Numbery "
               + "type Query { read: Stringy } "
               + "\n\"Muted\"\n"
@@ -429,6 +430,27 @@ public class SimpleGraphQLBuilderTest {
   }
 
   @Test
+  public void fieldsCanBeDeprecated() {
+    final Reader schema =
+        new StringReader(
+            "type Query { read: String @deprecated(reason: \"No\") } "
+                + "input WriteInput { str2: String, str3: String @deprecated(reason: \"No\") } "
+                + "type Mutation { write(str1: String! strings: WriteInput): String }");
+
+    DataFetcher fetcher = env -> env.getArgument("str1");
+    GraphQL graphQL =
+        new SimpleGraphQLBuilder(schema)
+            .fetcher("Mutation", "write", fetcher)
+            .usePredefinedScalars(false)
+            .build();
+
+    String query = "mutation { write(str1: \"lol\", strings: { str2: \"lol\", str3: \"lol\" }) }";
+    ExecutionResult response = graphQL.execute(query);
+
+    assertThat(response.getData(), is(expectedResponse("write", "lol")));
+  }
+
+  @Test
   public void scalarDefaultsHaveDescriptions() {
     GraphQL graphQL = new SimpleGraphQLBuilder(schema).build();
 
@@ -453,7 +475,7 @@ public class SimpleGraphQLBuilderTest {
 
     HashMap<String, String> numberyDescription = new HashMap<>();
     numberyDescription.put("name", "Numbery");
-    numberyDescription.put("description", null);
+    numberyDescription.put("description", "Numbery description");
     assertThat(types, hasItem(numberyDescription));
   }
 
