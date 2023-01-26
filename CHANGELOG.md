@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix for scalar descriptions missing from SDL [#25](https://github.com/newrelic/newrelic-graphql-java-core/pull/25)
 
 ## [0.2.0] - 2023-01-26
-- Update to `graphql-java` 20.0 [#27](https://github.com/newrelic/newrelic-graphql-java-core/pull/27)
+- Move to `graphql-java` version 16.2 [#22](https://github.com/newrelic/newrelic-graphql-java-core/pull/22), [#23](https://github.com/newrelic/newrelic-graphql-java-core/pull/23)
 
 ## [0.1.1] - 2020-06-30
 - Fix for using our scalars with input mapped object [#17](https://github.com/newrelic/newrelic-graphql-java-core/pull/17)
