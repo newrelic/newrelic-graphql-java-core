@@ -126,5 +126,19 @@ third party notices document.
 ### Contributing
 Full details are available in our [CONTRIBUTING.md](CONTRIBUTING.md) file.
 We'd love to get your contributions! Keep in mind when you submit your pull request, you'll need to sign the CLA via the click-through using CLA-Assistant. You only have to sign the CLA one time per project.
-To execute our corporate CLA, which is required if your contribution is on behalf of a company, or if you have any questions, please drop us an email at opensource@newrelic.com. 
+To execute our corporate CLA, which is required if your contribution is on behalf of a company, or if you have any questions, please drop us an email at opensource@newrelic.com.
 
+### Publishing
+
+Mainly of interest to maintainers on the project. We publish this library to
+Maven Central. This requires a few steps:
+
+* GitHub actions on merge to master will publish to a staging repo on Sonatype
+  * The credentials for this are a user access token stored in GitHub action secrets if they need to be updated
+  * The [Sonatype UI](https://oss.sonatype.org/) shows a staging repo's specific URL if you want to test it directly
+* Following [Sonatype instructions for releasing from Staging](https://central.sonatype.org/publish/release/):
+  * Locate and Close the auto-created staging repo
+  * Once closed, you can Release the repo which will push it to Maven Central
+* Wait a bit... it sometimes takes a while for these changes to propagate
+
+If you're part of New Relic and need access to Sonatype, find someone internally who releases public Java libraries for direction.
