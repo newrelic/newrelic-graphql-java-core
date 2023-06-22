@@ -8,7 +8,7 @@ plugins {
     id("java-library")
     id("maven-publish")
     id("signing")
-    id("com.github.sherter.google-java-format") version "0.8"
+    id("com.github.sherter.google-java-format") version "0.9"
 }
 
 repositories {
