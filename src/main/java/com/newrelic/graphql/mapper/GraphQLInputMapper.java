@@ -6,6 +6,8 @@ package com.newrelic.graphql.mapper;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import graphql.schema.*;
 import java.util.List;
 
@@ -32,7 +34,7 @@ public class GraphQLInputMapper {
 
   /** @param packageName Package name to find the destination type in for conversion */
   public GraphQLInputMapper(String packageName) {
-    this(packageName, new ObjectMapper());
+    this(packageName, JsonMapper.builder().addModule(new JavaTimeModule()).build());
   }
 
   /**
