@@ -55,7 +55,7 @@ public class DateTimeCoercingTest {
   }
 
   @Test
-  public void parseLiteralInvalidGuid() {
+  public void parseLiteralInvalidDate() {
     CoercingParseLiteralException thrown =
         assertThrows(
             CoercingParseLiteralException.class,

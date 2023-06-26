@@ -51,6 +51,11 @@ public class DateTimeTest {
 
   @Test
   public void convertToScalarFromInstanceOfSelf() throws ClassNotFoundException {
+    // This tests conversion in the format that GraphQLInput mapper may see for a plain DateTime
+    // field.
+    // The GraphQL engine will have turned our scalar into a DateTime already, but converting must
+    // be safe
+    // for some generated code cases, so make sure it round-trips fine.
     Object actual = mapper.convert(new DateTime(zonedExample), PredefinedScalars.DateTime);
 
     assertEquals(new DateTime(zonedExample), actual);
@@ -58,6 +63,10 @@ public class DateTimeTest {
 
   @Test
   public void convertToContainerObjectFromInstanceOfSelf() throws ClassNotFoundException {
+    // This tests conversion in the format that GraphQLInput mapper may see for DateTimes on an
+    // input object.
+    // The GraphQL engine will have turned our object into a Map containing our DateTime scalar,
+    // so this Map looks like what the DataFetchingEnvironment arguments would hold.
     HashMap<String, Object> raw = new HashMap<>();
     raw.put("dateTime", new DateTime(zonedExample));
     Object actual = mapper.convert(raw, DateTimeContainer.GraphQLType);

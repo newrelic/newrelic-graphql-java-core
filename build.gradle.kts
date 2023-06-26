@@ -23,6 +23,7 @@ tasks.withType<JavaCompile> {
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:${jacksonCoreVersion}")
     implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonCoreVersion}")
     implementation("com.graphql-java:graphql-java:${graphqlVersion}")
 
     testImplementation("junit:junit:${junitVersion}")

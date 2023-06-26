@@ -4,8 +4,13 @@
  */
 package com.newrelic.graphql.mapper;
 
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_WITH_ZONE_ID;
+
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import graphql.schema.*;
 import java.util.List;
 
@@ -32,7 +37,18 @@ public class GraphQLInputMapper {
 
   /** @param packageName Package name to find the destination type in for conversion */
   public GraphQLInputMapper(String packageName) {
-    this(packageName, new ObjectMapper());
+    this(
+        packageName,
+        JsonMapper.builder()
+            // For working with newer versions of Jackson on Java 11+ we need this module to
+            // serialized times
+            .addModule(new JavaTimeModule())
+            // Our mapping of the partially converted GraphQL inputs to POJOs actually serializes
+            // things under
+            // the covers, so make sure those are in ISO string form with zones intact.
+            .configure(WRITE_DATES_AS_TIMESTAMPS, false)
+            .configure(WRITE_DATES_WITH_ZONE_ID, true)
+            .build());
   }
 
   /**
