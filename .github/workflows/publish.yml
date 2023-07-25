@@ -16,6 +16,11 @@ jobs:
       with:
         java-version: 11
 
+    - name: Setup Gradle to generate and submit dependency graphs
+      uses: gradle/gradle-build-action@v2
+      with:
+        dependency-graph: generate-and-submit
+
     - name: Build and Publish
       env:
         SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
@@ -24,9 +29,6 @@ jobs:
         ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.SIGNING_KEY_ID }}
         ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
       run: ./gradlew build publish
-
-    - name: Run dependency snapshot
-      uses: newrelic-forks/gradle-dependency-submission@v1
 
     - name: Archive libs
       uses: actions/upload-artifact@v1
