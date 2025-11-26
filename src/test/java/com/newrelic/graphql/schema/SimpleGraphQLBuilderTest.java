@@ -22,6 +22,10 @@ import graphql.Scalars;
 import graphql.execution.DataFetcherExceptionHandlerParameters;
 import graphql.execution.DataFetcherExceptionHandlerResult;
 import graphql.execution.SimpleDataFetcherExceptionHandler;
+import graphql.execution.instrumentation.Instrumentation;
+import graphql.execution.instrumentation.InstrumentationContext;
+import graphql.execution.instrumentation.SimpleInstrumentation;
+import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import graphql.scalar.GraphqlStringCoercing;
 import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLScalarType;
@@ -37,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 public class SimpleGraphQLBuilderTest {
@@ -504,6 +509,82 @@ public class SimpleGraphQLBuilderTest {
     stringyDescription.put("name", "Stringy");
     stringyDescription.put("description", "Stringy description");
     assertThat(types, hasItem(stringyDescription));
+  }
+
+  @Test
+  public void instrumentationIsApplied() {
+    DataFetcher fetcher = env -> "instrumented";
+    AtomicInteger executionCount = new AtomicInteger(0);
+
+    TestInstrumentation testInstrumentation = new TestInstrumentation(executionCount);
+    List<Instrumentation> instrumentations = List.of(testInstrumentation);
+
+    GraphQL graphQL =
+        new SimpleGraphQLBuilder(schema)
+            .fetcher("Query", "read", fetcher)
+            .instrumentation(instrumentations)
+            .build();
+
+    ExecutionResult response = graphQL.execute("query { read }");
+
+    assertThat(response.getData(), is(expectedResponse("read", "instrumented")));
+    assertThat(executionCount.get(), is(1));
+  }
+
+  @Test
+  public void multipleInstrumentationsAreChained() {
+    DataFetcher fetcher = env -> "chained";
+    AtomicInteger firstInstrumentationCount = new AtomicInteger(0);
+    AtomicInteger secondInstrumentationCount = new AtomicInteger(0);
+
+    TestInstrumentation firstInstrumentation = new TestInstrumentation(firstInstrumentationCount);
+    TestInstrumentation secondInstrumentation = new TestInstrumentation(secondInstrumentationCount);
+
+    List<Instrumentation> instrumentations = List.of(firstInstrumentation, secondInstrumentation);
+
+    GraphQL graphQL =
+        new SimpleGraphQLBuilder(schema)
+            .fetcher("Query", "read", fetcher)
+            .instrumentation(instrumentations)
+            .build();
+
+    ExecutionResult response = graphQL.execute("query { read }");
+
+    assertThat(response.getData(), is(expectedResponse("read", "chained")));
+    assertThat(firstInstrumentationCount.get(), is(1));
+    assertThat(secondInstrumentationCount.get(), is(1));
+  }
+
+  @Test
+  public void emptyInstrumentationSetDoesNotFail() {
+    DataFetcher fetcher = env -> "no-instrumentation";
+
+    List<Instrumentation> instrumentations = new ArrayList<>();
+
+    GraphQL graphQL =
+        new SimpleGraphQLBuilder(schema)
+            .fetcher("Query", "read", fetcher)
+            .instrumentation(instrumentations)
+            .build();
+
+    ExecutionResult response = graphQL.execute("query { read }");
+
+    assertThat(response.getData(), is(expectedResponse("read", "no-instrumentation")));
+  }
+
+  static class TestInstrumentation extends SimpleInstrumentation {
+    private final AtomicInteger executionCount;
+
+    public TestInstrumentation(AtomicInteger executionCount) {
+      this.executionCount = executionCount;
+    }
+
+    @Override
+    public InstrumentationContext<ExecutionResult> beginExecution(
+        InstrumentationExecutionParameters parameters) {
+      executionCount.incrementAndGet();
+      return super.beginExecution(parameters);
+    }
   }
 
   private void assertErrorWithMessage(ExecutionResult response) {

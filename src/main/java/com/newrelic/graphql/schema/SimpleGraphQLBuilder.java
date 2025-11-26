@@ -11,6 +11,8 @@ import graphql.execution.AsyncExecutionStrategy;
 import graphql.execution.AsyncSerialExecutionStrategy;
 import graphql.execution.DataFetcherExceptionHandler;
 import graphql.execution.SimpleDataFetcherExceptionHandler;
+import graphql.execution.instrumentation.ChainedInstrumentation;
+import graphql.execution.instrumentation.Instrumentation;
 import graphql.language.InterfaceTypeDefinition;
 import graphql.language.TypeDefinition;
 import graphql.language.UnionTypeDefinition;
@@ -24,6 +26,7 @@ import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,6 +63,7 @@ public class SimpleGraphQLBuilder {
   private HashMap<String, GraphQLScalarType> scalars;
   private HashMap<String, TypeResolver> typeResolvers;
   private IConfigureSimpleGraphQLBuilder configurator;
+  private List<Instrumentation> instrumentations;
   private boolean usePredefinedScalars;
 
   /** @param schema Reader containing your GraphQL SDL definition */
@@ -98,9 +102,16 @@ public class SimpleGraphQLBuilder {
     GraphQLSchema schema =
         schemaGenerator.makeExecutableSchema(options, typeRegistry, runtimeWiringBuilder.build());
 
-    return GraphQL.newGraphQL(schema)
-        .queryExecutionStrategy(new AsyncExecutionStrategy(exceptionHandler))
-        .mutationExecutionStrategy(new AsyncSerialExecutionStrategy(exceptionHandler));
+    GraphQL.Builder graphQL =
+        GraphQL.newGraphQL(schema)
+            .queryExecutionStrategy(new AsyncExecutionStrategy(exceptionHandler))
+            .mutationExecutionStrategy(new AsyncSerialExecutionStrategy(exceptionHandler));
+
+    if (instrumentations != null && !instrumentations.isEmpty()) {
+      graphQL.instrumentation(new ChainedInstrumentation(instrumentations));
+    }
+
+    return graphQL;
   }
 
   /**
@@ -197,6 +208,15 @@ public class SimpleGraphQLBuilder {
    */
   public SimpleGraphQLBuilder configure(IConfigureSimpleGraphQLBuilder configurator) {
     this.configurator = configurator;
+    return this;
+  }
+
+  /**
+   * @param instrumentations List of instrumentations to apply to the GraphQL execution instance
+   * @return Fluent builder instance
+   */
+  public SimpleGraphQLBuilder instrumentation(List<Instrumentation> instrumentations) {
+    this.instrumentations = instrumentations;
     return this;
   }
 
