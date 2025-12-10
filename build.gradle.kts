@@ -1,3 +1,5 @@
+import java.time.Duration
+
 val graphqlVersion = project.findProperty("graphql.version") as String
 val jacksonCoreVersion = project.findProperty("jackson-core.version") as String
 val jacksonDatabindVersion = project.findProperty("jackson-databind.version") as String
@@ -9,6 +11,7 @@ plugins {
     id("maven-publish")
     id("signing")
     id("com.github.sherter.google-java-format") version "0.9"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
 
 repositories {
@@ -95,35 +98,52 @@ configure<PublishingExtension> {
     }
 
     repositories {
-        maven {
-            if (useLocalSonatype) {
+        if (useLocalSonatype) {
+            maven {
                 val releasesRepoUrl = project.uri("http://localhost:8081/repository/maven-releases/")
                 val snapshotsRepoUrl = project.uri("http://localhost:8081/repository/maven-snapshots/")
                 url = if (project.version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
             }
-            else {
-                val releasesRepoUrl = project.uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-                val snapshotsRepoUrl = project.uri("https://oss.sonatype.org/content/repositories/snapshots/")
-                url = if (project.version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
-                project.configure<SigningExtension> {
-                    val signingKey : String? = project.properties["signingKey"] as String?
-                    val signingKeyId: String? = project.properties["signingKeyId"] as String?
-                    val signingPassword: String? = project.properties["signingPassword"] as String?
-                    useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-                    this.sign(publishing.publications["mavenJava"])
-                }
-            }
-            credentials {
-                username = System.getenv("SONATYPE_USERNAME")
+        }
+    }
+}
 
-                if ((username?.length ?: 0) == 0){
-                    username = project.properties["sonatypeUsername"] as String?
-                }
-                password = System.getenv("SONATYPE_PASSWORD")
-                if ((password?.length ?: 0) == 0) {
-                    password = project.properties["sonatypePassword"] as String?
-                }
+signing {
+    val signingKey: String? = project.properties["signingKey"] as String?
+    val signingKeyId: String? = project.properties["signingKeyId"] as String?
+    val signingPassword: String? = project.properties["signingPassword"] as String?
+
+    if (signingKey != null && signingKeyId != null && signingPassword != null) {
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        sign(publishing.publications["mavenJava"])
+    }
+}
+
+// Only configure nexusPublishing when not using local Sonatype
+if (!useLocalSonatype) {
+    nexusPublishing {
+        repositories {
+            sonatype {
+                // Configure for new Sonatype Central Portal
+                // See: https://central.sonatype.org/publish/publish-portal-gradle/
+                nexusUrl.set(uri("https://central.sonatype.com/api/v1/publisher/"))
+                snapshotRepositoryUrl.set(uri("https://central.sonatype.com/api/v1/publisher/"))
+
+                // Authentication: uses user token from Sonatype Central Portal
+                // Username is your Sonatype Central username
+                // Password is the generated token from the portal (not your account password)
+                val sonatypeUsername = System.getenv("SONATYPE_USERNAME")
+                    ?: (project.properties["sonatypeUsername"] as String?)
+                val sonatypePassword = System.getenv("SONATYPE_PASSWORD")
+                    ?: (project.properties["sonatypePassword"] as String?)
+
+                username.set(sonatypeUsername)
+                password.set(sonatypePassword)
             }
         }
+
+        // Configure timeouts for large uploads
+        connectTimeout.set(Duration.ofMinutes(3))
+        clientTimeout.set(Duration.ofMinutes(3))
     }
 }
