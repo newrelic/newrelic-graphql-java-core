@@ -124,10 +124,10 @@ if (!useLocalSonatype) {
     nexusPublishing {
         repositories {
             sonatype {
-                // Configure for new Sonatype Central Portal
-                // See: https://central.sonatype.org/publish/publish-portal-gradle/
-                nexusUrl.set(uri("https://central.sonatype.com/api/v1/publisher/"))
-                snapshotRepositoryUrl.set(uri("https://central.sonatype.com/api/v1/publisher/"))
+                // Use OSSRH Nexus Repository Manager endpoints
+                // For accounts created after Feb 2021, use s01.oss.sonatype.org
+                nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+                snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
 
                 // Authentication: uses user token from Sonatype Central Portal
                 // Username is your Sonatype Central username
