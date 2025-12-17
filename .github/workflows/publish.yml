@@ -28,7 +28,7 @@ jobs:
         ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
         ORG_GRADLE_PROJECT_signingKeyId: ${{ secrets.SIGNING_KEY_ID }}
         ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
-      run: ./gradlew build publishToSonatype
+      run: ./gradlew build publishToSonatype closeSonatypeStagingRepository
 
     - name: Archive libs
       uses: actions/upload-artifact@v1
