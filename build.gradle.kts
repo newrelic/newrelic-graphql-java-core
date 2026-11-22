@@ -1,76 +1,78 @@
 import java.time.Duration
 
-val graphqlVersion = project.findProperty("graphql.version") as String
-val jacksonCoreVersion = project.findProperty("jackson-core.version") as String
-val jacksonDatabindVersion = project.findProperty("jackson-databind.version") as String
-val junitVersion = project.findProperty("junit.version") as String
-val mockitoVersion = project.findProperty("mockito.version") as String
+// Minimum Java version targeted by the published library
+val JAVA_RELEASE = 17
 
 plugins {
     id("java-library")
     id("maven-publish")
     id("signing")
-    id("com.github.sherter.google-java-format") version "0.9"
-    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+    alias(libs.plugins.spotless)
+    alias(libs.plugins.nexus.publish)
 }
 
 repositories {
     mavenCentral()
 }
 
-tasks.withType<JavaCompile> {
-    options.compilerArgs.add("-Xlint:unchecked")
-    options.compilerArgs.add("-Xlint:deprecation")
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.addAll(listOf("-Xlint:unchecked", "-Xlint:deprecation", "-Werror"))
+    options.release.set(JAVA_RELEASE)
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-core:${jacksonCoreVersion}")
-    implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonCoreVersion}")
-    implementation("com.graphql-java:graphql-java:${graphqlVersion}")
+    api(platform(libs.jackson.bom))
+    api(libs.jackson.core)
+    api(libs.jackson.databind)
+    api(libs.jackson.datatype.jsr310)
+    api(libs.graphql.java)
 
-    testImplementation("junit:junit:${junitVersion}")
-    testImplementation("org.mockito:mockito-core:${mockitoVersion}")
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter.params)
+    testImplementation(libs.hamcrest)
+    testRuntimeOnly(libs.junit.platform.launcher)
 }
 
-tasks.withType<Javadoc> {
-    options.overview = "${file("src/overview.html")}"
+tasks.test {
+    useJUnitPlatform()
 }
 
-tasks {
-    val taskScope = this
-    val sources = sourceSets
-    val sourcesJar by creating(Jar::class) {
-        dependsOn(JavaPlugin.CLASSES_TASK_NAME)
-        archiveClassifier.set("sources")
-        from(sources.main.get().allSource)
-    }
-
-    val javadocJar by creating(Jar::class) {
-        dependsOn(JavaPlugin.JAVADOC_TASK_NAME)
-        archiveClassifier.set("javadoc")
-        from(taskScope.javadoc)
-    }
-
-    val jar: Jar by taskScope
-    jar.apply {
-        manifest {
-            attributes(mapOf(
-                    "Implementation-Version" to project.version,
-                    "Implementation-Vendor" to "New Relic, Inc."
-            ))
-        }
+tasks.javadoc {
+    (options as StandardJavadocDocletOptions).apply {
+        overview = file("src/overview.html").absolutePath
+        addBooleanOption("Xdoclint:all,-missing", true)
     }
 }
 
-val useLocalSonatype = project.properties["useLocalSonatype"] == "true"
+tasks.jar {
+    manifest {
+        attributes(
+            mapOf(
+                "Implementation-Version" to project.version,
+                "Implementation-Vendor" to "New Relic, Inc."
+            )
+        )
+    }
+}
 
-configure<PublishingExtension> {
+val useLocalSonatype = project.findProperty("useLocalSonatype") == "true"
+
+publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
-            artifact(tasks["sourcesJar"])
-            artifact(tasks["javadocJar"])
             pom {
                 name.set(project.name)
                 description.set("Helpers for integrating the graphql-java library with your JVM application")
@@ -78,7 +80,7 @@ configure<PublishingExtension> {
                 licenses {
                     license {
                         name.set("The Apache License, Version 2.0")
-                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
                         distribution.set("repo")
                     }
                 }
@@ -100,18 +102,19 @@ configure<PublishingExtension> {
     repositories {
         if (useLocalSonatype) {
             maven {
-                val releasesRepoUrl = project.uri("http://localhost:8081/repository/maven-releases/")
-                val snapshotsRepoUrl = project.uri("http://localhost:8081/repository/maven-snapshots/")
+                val releasesRepoUrl = uri("http://localhost:8081/repository/maven-releases/")
+                val snapshotsRepoUrl = uri("http://localhost:8081/repository/maven-snapshots/")
                 url = if (project.version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+                isAllowInsecureProtocol = true
             }
         }
     }
 }
 
 signing {
-    val signingKey: String? = project.properties["signingKey"] as String?
-    val signingKeyId: String? = project.properties["signingKeyId"] as String?
-    val signingPassword: String? = project.properties["signingPassword"] as String?
+    val signingKey = project.findProperty("signingKey") as String?
+    val signingKeyId = project.findProperty("signingKeyId") as String?
+    val signingPassword = project.findProperty("signingPassword") as String?
 
     if (signingKey != null && signingKeyId != null && signingPassword != null) {
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
@@ -124,18 +127,15 @@ if (!useLocalSonatype) {
     nexusPublishing {
         repositories {
             sonatype {
-                // Use OSSRH Nexus Repository Manager endpoints
-                // For accounts created after Feb 2021, use s01.oss.sonatype.org
+                // Sonatype Central Portal's OSSRH-compatible staging API
                 nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
                 snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
 
-                // Authentication: uses user token from Sonatype Central Portal
-                // Username is your Sonatype Central username
-                // Password is the generated token from the portal (not your account password)
+                // Username and password are a user token generated in the Sonatype Central Portal
                 val sonatypeUsername = System.getenv("SONATYPE_USERNAME")
-                    ?: (project.properties["sonatypeUsername"] as String?)
+                    ?: (project.findProperty("sonatypeUsername") as String?)
                 val sonatypePassword = System.getenv("SONATYPE_PASSWORD")
-                    ?: (project.properties["sonatypePassword"] as String?)
+                    ?: (project.findProperty("sonatypePassword") as String?)
 
                 username.set(sonatypeUsername)
                 password.set(sonatypePassword)

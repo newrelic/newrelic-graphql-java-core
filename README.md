@@ -11,18 +11,18 @@ This library provides helpers for integrating [graphql-java](https://github.com/
     <dependency>
       <groupId>com.newrelic.graphql</groupId>
       <artifactId>core</artifactId>
-      <version>0.1.1</version>
+      <version>1.0.0</version>
     </dependency>
 ```
 
 ### Gradle
 ```
-compile("com.newrelic.graphql:core:0.1.1")
+implementation("com.newrelic.graphql:core:1.0.0")
 ```
 
 ## Usage
 
-Version specific Javadocs can be found [here](https://newrelic.github.io/newrelic-graphql-java-core/docs/v0.1.1/).
+Version specific Javadocs can be found [here](https://javadoc.io/doc/com.newrelic.graphql/core).
 
 ### [`SimpleGraphQLBuilder`](https://github.com/newrelic/newrelic-graphql-java-core/blob/master/src/main/java/com/newrelic/graphql/schema/SimpleGraphQLBuilder.java)
 
@@ -97,11 +97,11 @@ To opt out of auto-registration of these predefined scalars, use the `usePredefi
 
 ### Requirements
 
-* Java 8 or greater
+* Java 17 or greater
 
 ### Building
 
-The project uses Gradle 6 and GitHub Actions for building.
+The project uses Gradle 9 and GitHub Actions for building.
 
 To compile, run the tests and build the jars:
 
@@ -109,12 +109,13 @@ To compile, run the tests and build the jars:
 
 ### Code style
 This project uses the [google-java-format](https://github.com/google/google-java-format) code style, and it is
-easily applied via an included [gradle plugin](https://github.com/sherter/google-java-format-gradle-plugin):
+easily applied via the [Spotless](https://github.com/diffplug/spotless) gradle plugin:
 
-`$ ./gradlew googleJavaFormat verifyGoogleJavaFormat`
+`$ ./gradlew spotlessApply`
 
-Please be sure to run the formatter before committing any changes. There is a `pre-commit-hook.sh` which can
-be applied automatically before commits by moving it into `.git/hooks/pre-commit`.
+`./gradlew build` runs `spotlessCheck` and fails if any files are not formatted.
+
+Please be sure to run the formatter before committing any changes.
 
 ### Licensing
 newrelic-graphql-java-core is licensed under the Apache 2.0 License.

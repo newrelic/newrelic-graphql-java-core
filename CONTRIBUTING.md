@@ -46,15 +46,15 @@ You should not have a need to override or modify the generated boilerplate, but 
 ## Coding Style Guidelines
 Our code base is formatted according to the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html).
 
-The project is configured to use the [google-java-format-gradle-plugin](https://github.com/sherter/google-java-format-gradle-plugin) which can be utilized as follows:  
+The project is configured to use the [Spotless](https://github.com/diffplug/spotless) gradle plugin with google-java-format, which can be utilized as follows:
 
-* Execute the task `googleJavaFormat` to format all `*.java` files in the project:
+* Execute the task `spotlessApply` to format all `*.java` files in the project:
 
-`./gradlew goJF`
+`./gradlew spotlessApply`
 
-* Execute the task `verifyGoogleJavaFormat` to verify that all `*.java` files are formatted properly:
+* Execute the task `spotlessCheck` to verify that all `*.java` files are formatted properly:
 
-`./gradlew verGJF`
+`./gradlew spotlessCheck`
 
 ## Testing Guidelines
 

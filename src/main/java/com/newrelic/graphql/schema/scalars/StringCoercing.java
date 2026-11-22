@@ -4,25 +4,34 @@
  */
 package com.newrelic.graphql.schema.scalars;
 
+import graphql.GraphQLContext;
+import graphql.execution.CoercedVariables;
 import graphql.language.StringValue;
+import graphql.language.Value;
 import graphql.schema.Coercing;
 import graphql.schema.CoercingParseLiteralException;
 import graphql.schema.CoercingParseValueException;
 import graphql.schema.CoercingSerializeException;
+import java.util.Locale;
 
 /** Base class for implementations of {@code Coercing} interface that expect String literals */
 public abstract class StringCoercing<T> implements Coercing<T, String> {
 
   /**
    * Called during query validation to convert an query input AST node into a Java object acceptable
-   * for the scalar type. The input object will be an instance of {@link graphql.language.Value}.
+   * for the scalar type.
    *
    * @param input AST node from query input
+   * @param variables Coerced variables of the current execution
+   * @param graphQLContext Context of the current execution
+   * @param locale Locale of the current execution
    * @return String value from input
    * @throws CoercingParseLiteralException when AST input is not of expected type StringValue
    */
   @Override
-  public T parseLiteral(Object input) throws CoercingParseLiteralException {
+  public T parseLiteral(
+      Value<?> input, CoercedVariables variables, GraphQLContext graphQLContext, Locale locale)
+      throws CoercingParseLiteralException {
     if (input == null) {
       throw new CoercingParseLiteralException("Expected AST type 'StringValue' but was null.");
     }
@@ -53,10 +62,13 @@ public abstract class StringCoercing<T> implements Coercing<T, String> {
    * type.
    *
    * @param input Query variable value
+   * @param graphQLContext Context of the current execution
+   * @param locale Locale of the current execution
    * @return String from input object
    */
   @Override
-  public T parseValue(Object input) throws CoercingParseValueException {
+  public T parseValue(Object input, GraphQLContext graphQLContext, Locale locale)
+      throws CoercingParseValueException {
     try {
       return parseFromString(input.toString());
     } catch (Exception e) {
@@ -68,10 +80,13 @@ public abstract class StringCoercing<T> implements Coercing<T, String> {
    * Called to convert a Java object result of a DataFetcher to a String for responding.
    *
    * @param input Instance of wrapped type
+   * @param graphQLContext Context of the current execution
+   * @param locale Locale of the current execution
    * @return String conversion from wrapper type
    */
   @Override
-  public String serialize(Object input) throws CoercingSerializeException {
+  public String serialize(Object input, GraphQLContext graphQLContext, Locale locale)
+      throws CoercingSerializeException {
     try {
       return serializeToString(cast(input));
     } catch (Exception e) {

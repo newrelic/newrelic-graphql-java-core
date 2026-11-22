@@ -11,7 +11,9 @@ import java.util.Map;
 /** Custom scalar representing a specific number of seconds since epoch */
 public class EpochSeconds extends InstantWrapper<EpochSeconds> {
 
-  /** @param value Incoming number of seconds since epoch */
+  /**
+   * @param value Incoming number of seconds since epoch
+   */
   public EpochSeconds(Number value) {
     super(value, (n) -> buildInstant(n, 9));
   }
@@ -22,7 +24,9 @@ public class EpochSeconds extends InstantWrapper<EpochSeconds> {
     this(rawValueFromProps(props));
   }
 
-  /** @return Coercion instance for converting numbers to EpochSeconds */
+  /**
+   * @return Coercion instance for converting numbers to EpochSeconds
+   */
   public static Coercing<EpochSeconds, Number> getCoercing() {
     return new NumberCoercing<EpochSeconds>() {
       @Override

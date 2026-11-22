@@ -15,7 +15,9 @@ import java.util.Map;
 public class DateTime {
   private final ZonedDateTime dateTime;
 
-  /** @param dateTime Construct with a specific datetime */
+  /**
+   * @param dateTime Construct with a specific datetime
+   */
   public DateTime(ZonedDateTime dateTime) {
     this.dateTime = dateTime;
   }
@@ -42,7 +44,9 @@ public class DateTime {
     return (T) rawValue;
   }
 
-  /** @return Wrapped datetime object */
+  /**
+   * @return Wrapped datetime object
+   */
   public ZonedDateTime getDateTime() {
     return dateTime;
   }

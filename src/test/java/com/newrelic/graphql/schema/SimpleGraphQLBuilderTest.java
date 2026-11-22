@@ -8,7 +8,7 @@ import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.newrelic.graphql.schema.scalars.EpochMilliseconds;
 import com.newrelic.graphql.schema.scalars.EpochSeconds;
@@ -24,7 +24,8 @@ import graphql.execution.DataFetcherExceptionHandlerResult;
 import graphql.execution.SimpleDataFetcherExceptionHandler;
 import graphql.execution.instrumentation.Instrumentation;
 import graphql.execution.instrumentation.InstrumentationContext;
-import graphql.execution.instrumentation.SimpleInstrumentation;
+import graphql.execution.instrumentation.InstrumentationState;
+import graphql.execution.instrumentation.SimplePerformantInstrumentation;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import graphql.scalar.GraphqlStringCoercing;
 import graphql.schema.DataFetcher;
@@ -40,9 +41,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SimpleGraphQLBuilderTest {
 
@@ -572,7 +574,7 @@ public class SimpleGraphQLBuilderTest {
     assertThat(response.getData(), is(expectedResponse("read", "no-instrumentation")));
   }
 
-  static class TestInstrumentation extends SimpleInstrumentation {
+  static class TestInstrumentation extends SimplePerformantInstrumentation {
     private final AtomicInteger executionCount;
 
     public TestInstrumentation(AtomicInteger executionCount) {
@@ -581,9 +583,9 @@ public class SimpleGraphQLBuilderTest {
 
     @Override
     public InstrumentationContext<ExecutionResult> beginExecution(
-        InstrumentationExecutionParameters parameters) {
+        InstrumentationExecutionParameters parameters, InstrumentationState state) {
       executionCount.incrementAndGet();
-      return super.beginExecution(parameters);
+      return super.beginExecution(parameters, state);
     }
   }
 
@@ -598,10 +600,10 @@ public class SimpleGraphQLBuilderTest {
     public boolean called = false;
 
     @Override
-    public DataFetcherExceptionHandlerResult onException(
+    public CompletableFuture<DataFetcherExceptionHandlerResult> handleException(
         DataFetcherExceptionHandlerParameters handlerParameters) {
       called = true;
-      return super.onException(handlerParameters);
+      return super.handleException(handlerParameters);
     }
   }
 

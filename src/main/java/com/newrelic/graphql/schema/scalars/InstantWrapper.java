@@ -31,7 +31,9 @@ public class InstantWrapper<T extends InstantWrapper> extends NumberCoercing.Num
     return Instant.ofEpochSecond(0, dec.scaleByPowerOfTen(factor).longValue());
   }
 
-  /** @return Instant instance */
+  /**
+   * @return Instant instance
+   */
   public Instant getInstant() {
     return instant;
   }

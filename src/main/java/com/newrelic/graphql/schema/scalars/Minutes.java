@@ -12,7 +12,9 @@ import java.util.Map;
 /** Custom scalar representing a specific length of time in minutes */
 public class Minutes extends DurationWrapper<Minutes> {
 
-  /** @param value Number of minutes */
+  /**
+   * @param value Number of minutes
+   */
   public Minutes(Number value) {
     super(value, (n) -> Duration.ofMinutes(n.longValue()));
   }
@@ -23,7 +25,9 @@ public class Minutes extends DurationWrapper<Minutes> {
     this(rawValueFromProps(props));
   }
 
-  /** @return Coercion instance for converting numbers to Minutes */
+  /**
+   * @return Coercion instance for converting numbers to Minutes
+   */
   public static Coercing<Minutes, Number> getCoercing() {
     return new NumberCoercing<Minutes>() {
       @Override
