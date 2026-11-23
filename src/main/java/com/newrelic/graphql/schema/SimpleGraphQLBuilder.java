@@ -66,7 +66,9 @@ public class SimpleGraphQLBuilder {
   private List<Instrumentation> instrumentations;
   private boolean usePredefinedScalars;
 
-  /** @param schema Reader containing your GraphQL SDL definition */
+  /**
+   * @param schema Reader containing your GraphQL SDL definition
+   */
   public SimpleGraphQLBuilder(Reader schema) {
     this.schemaReader = schema;
 
@@ -84,7 +86,9 @@ public class SimpleGraphQLBuilder {
     return builder().build();
   }
 
-  /** @return Returns intermediate builder object to allow additional configuration. */
+  /**
+   * @return Returns intermediate builder object to allow additional configuration.
+   */
   public GraphQL.Builder builder() {
     TypeDefinitionRegistry typeRegistry = schemaParser.parse(schemaReader);
 

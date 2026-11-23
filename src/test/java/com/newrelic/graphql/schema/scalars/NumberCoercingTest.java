@@ -4,8 +4,11 @@
  */
 package com.newrelic.graphql.schema.scalars;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static com.newrelic.graphql.schema.scalars.CoercingTestSupport.CONTEXT;
+import static com.newrelic.graphql.schema.scalars.CoercingTestSupport.LOCALE;
+import static com.newrelic.graphql.schema.scalars.CoercingTestSupport.VARIABLES;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import graphql.language.FloatValue;
 import graphql.language.IntValue;
@@ -17,14 +20,14 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedClass;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
+@ParameterizedClass(name = "{1}")
+@MethodSource("data")
 public class NumberCoercingTest {
 
-  @Parameterized.Parameters(name = "{1}")
   public static Collection<Object[]> data() {
     return Arrays.asList(
         new Object[][] {
@@ -52,10 +55,12 @@ public class NumberCoercingTest {
 
   private Number originalValue;
   private NumberCoercing.NumberWrapper numberWrapper;
-  private NumberCoercing coercing;
+  private NumberCoercing<?> coercing;
 
   public NumberCoercingTest(
-      Number originalValue, NumberCoercing.NumberWrapper numberWrapper, NumberCoercing coercing) {
+      Number originalValue,
+      NumberCoercing.NumberWrapper numberWrapper,
+      NumberCoercing<?> coercing) {
     this.originalValue = originalValue;
     this.numberWrapper = numberWrapper;
     this.coercing = coercing;
@@ -63,7 +68,7 @@ public class NumberCoercingTest {
 
   @Test
   public void parseValue() {
-    NumberCoercing.NumberWrapper actual = coercing.parseValue(originalValue);
+    NumberCoercing.NumberWrapper actual = coercing.parseValue(originalValue, CONTEXT, LOCALE);
     assertEquals(numberWrapper, actual);
   }
 
@@ -71,18 +76,19 @@ public class NumberCoercingTest {
   public void parseValueInvalid() {
     assertThrows(
         CoercingParseValueException.class,
-        () -> coercing.parseValue("111111111111111111111111111111"));
+        () -> coercing.parseValue("111111111111111111111111111111", CONTEXT, LOCALE));
   }
 
   @Test
   public void parseValueNull() {
-    assertThrows(CoercingParseValueException.class, () -> coercing.parseValue(null));
+    assertThrows(
+        CoercingParseValueException.class, () -> coercing.parseValue(null, CONTEXT, LOCALE));
   }
 
   @Test
   public void parseStringLiteral() {
     StringValue literal = new StringValue(originalValue.toString());
-    assertEquals(coercing.parseLiteral(literal), numberWrapper);
+    assertEquals(coercing.parseLiteral(literal, VARIABLES, CONTEXT, LOCALE), numberWrapper);
   }
 
   @Test
@@ -90,7 +96,7 @@ public class NumberCoercingTest {
     // This path is only valid if input is integral
     if (originalValue instanceof Integer || originalValue instanceof Long) {
       IntValue literal = new IntValue(BigInteger.valueOf(originalValue.longValue()));
-      assertEquals(coercing.parseLiteral(literal), numberWrapper);
+      assertEquals(coercing.parseLiteral(literal, VARIABLES, CONTEXT, LOCALE), numberWrapper);
     }
   }
 
@@ -99,7 +105,7 @@ public class NumberCoercingTest {
     // This path is only valid if input is floating point
     if (originalValue instanceof Float || originalValue instanceof Double) {
       FloatValue literal = new FloatValue(BigDecimal.valueOf(originalValue.doubleValue()));
-      assertEquals(coercing.parseLiteral(literal), numberWrapper);
+      assertEquals(coercing.parseLiteral(literal, VARIABLES, CONTEXT, LOCALE), numberWrapper);
     }
   }
 
@@ -109,28 +115,31 @@ public class NumberCoercingTest {
         CoercingParseLiteralException.class,
         () -> {
           StringValue literal = new StringValue("not a number");
-          coercing.parseLiteral(literal);
+          coercing.parseLiteral(literal, VARIABLES, CONTEXT, LOCALE);
         });
   }
 
   @Test
   public void parseLiteralNull() {
-    assertThrows(CoercingParseLiteralException.class, () -> coercing.parseLiteral(null));
+    assertThrows(
+        CoercingParseLiteralException.class,
+        () -> coercing.parseLiteral(null, VARIABLES, CONTEXT, LOCALE));
   }
 
   @Test
   public void serialize() {
-    Number actual = coercing.serialize(numberWrapper);
+    Number actual = coercing.serialize(numberWrapper, CONTEXT, LOCALE);
     assertEquals(numberWrapper.getRawValue(), actual);
   }
 
   @Test
   public void serializeInvalidType() {
-    assertThrows(CoercingSerializeException.class, () -> coercing.serialize(new Object()));
+    assertThrows(
+        CoercingSerializeException.class, () -> coercing.serialize(new Object(), CONTEXT, LOCALE));
   }
 
   @Test
   public void serializeNull() {
-    assertThrows(CoercingSerializeException.class, () -> coercing.serialize(null));
+    assertThrows(CoercingSerializeException.class, () -> coercing.serialize(null, CONTEXT, LOCALE));
   }
 }

@@ -11,7 +11,9 @@ import java.util.Map;
 /** Custom scalar representing a specific length of time in milliseconds */
 public class Milliseconds extends DurationWrapper<Milliseconds> {
 
-  /** @param value Number of milliseconds */
+  /**
+   * @param value Number of milliseconds
+   */
   public Milliseconds(Number value) {
     super(value, (n) -> buildDuration(n, 6));
   }
@@ -22,7 +24,9 @@ public class Milliseconds extends DurationWrapper<Milliseconds> {
     super(rawValueFromProps(props), (n) -> buildDuration(rawValueFromProps(props), 6));
   }
 
-  /** @return Coercion instance for converting numbers to Milliseconds */
+  /**
+   * @return Coercion instance for converting numbers to Milliseconds
+   */
   public static Coercing<Milliseconds, Number> getCoercing() {
     return new NumberCoercing<Milliseconds>() {
       @Override

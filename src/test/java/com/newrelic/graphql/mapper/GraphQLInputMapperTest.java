@@ -4,8 +4,8 @@
  */
 package com.newrelic.graphql.mapper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import graphql.Scalars;
 import graphql.schema.GraphQLEnumType;
@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class GraphQLInputMapperTest {
 
@@ -29,7 +29,7 @@ public class GraphQLInputMapperTest {
 
   private GraphQLEnumType myEnumType = GraphQLEnumType.newEnum().name("MyEnum").build();
 
-  @Before
+  @BeforeEach
   public void setup() {
     String packageName = this.getClass().getPackage().getName();
     mapper = new GraphQLInputMapper(packageName);

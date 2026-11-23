@@ -26,7 +26,9 @@ public class DurationWrapper<T extends DurationWrapper> extends NumberCoercing.N
     duration = factory.of(value);
   }
 
-  /** @return Duration instance */
+  /**
+   * @return Duration instance
+   */
   public Duration getDuration() {
     return duration;
   }

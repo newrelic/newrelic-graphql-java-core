@@ -1,0 +1,23 @@
+[versions]
+graphql-java = "26.2"
+jackson = "2.23.0"
+junit = "6.1.3"
+hamcrest = "3.0"
+spotless = "8.12.0"
+nexus-publish = "2.0.0"
+
+[libraries]
+graphql-java = { module = "com.graphql-java:graphql-java", version.ref = "graphql-java" }
+jackson-bom = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jackson" }
+jackson-core = { module = "com.fasterxml.jackson.core:jackson-core" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind" }
+jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+hamcrest = { module = "org.hamcrest:hamcrest", version.ref = "hamcrest" }
+
+[plugins]
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "nexus-publish" }

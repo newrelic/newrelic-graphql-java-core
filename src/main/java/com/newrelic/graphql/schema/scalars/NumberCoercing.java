@@ -4,15 +4,19 @@
  */
 package com.newrelic.graphql.schema.scalars;
 
+import graphql.GraphQLContext;
+import graphql.execution.CoercedVariables;
 import graphql.language.FloatValue;
 import graphql.language.IntValue;
 import graphql.language.StringValue;
+import graphql.language.Value;
 import graphql.schema.Coercing;
 import graphql.schema.CoercingParseLiteralException;
 import graphql.schema.CoercingParseValueException;
 import graphql.schema.CoercingSerializeException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -30,10 +34,12 @@ public abstract class NumberCoercing<T extends NumberCoercing.NumberWrapper>
    * type.
    *
    * @param input Instance of type NumberWrapper
+   * @param graphQLContext Context of the current execution
+   * @param locale Locale of the current execution
    * @return Number conversion from wrapper type
    */
   @Override
-  public Number serialize(Object input) {
+  public Number serialize(Object input, GraphQLContext graphQLContext, Locale locale) {
     try {
       return ((NumberWrapper) input).value;
     } catch (Exception e) {
@@ -46,10 +52,12 @@ public abstract class NumberCoercing<T extends NumberCoercing.NumberWrapper>
    * type.
    *
    * @param input Query variable value
+   * @param graphQLContext Context of the current execution
+   * @param locale Locale of the current execution
    * @return Number converted to wrapper type
    */
   @Override
-  public T parseValue(Object input) {
+  public T parseValue(Object input, GraphQLContext graphQLContext, Locale locale) {
     if (input instanceof Number) {
       BigDecimal dec = NumberWrapper.toBigDecimal((Number) input);
       return fromBigDecimal(dec);
@@ -59,13 +67,17 @@ public abstract class NumberCoercing<T extends NumberCoercing.NumberWrapper>
 
   /**
    * Called during query validation to convert an query input AST node into a Java object acceptable
-   * for the scalar type. The input object will be an instance of {@link graphql.language.Value}.
+   * for the scalar type.
    *
    * @param input AST node from query input
+   * @param variables Coerced variables of the current execution
+   * @param graphQLContext Context of the current execution
+   * @param locale Locale of the current execution
    * @return Number converted to wrapper type
    */
   @Override
-  public T parseLiteral(Object input) {
+  public T parseLiteral(
+      Value<?> input, CoercedVariables variables, GraphQLContext graphQLContext, Locale locale) {
     try {
       if (input instanceof StringValue) {
         String value = ((StringValue) input).getValue();
@@ -97,12 +109,16 @@ public abstract class NumberCoercing<T extends NumberCoercing.NumberWrapper>
   public abstract static class NumberWrapper {
     private Number value;
 
-    /** @param value Incoming numeric value */
+    /**
+     * @param value Incoming numeric value
+     */
     public NumberWrapper(Number value) {
       this.value = value;
     }
 
-    /** @return Raw value in the wrapper was constructed with */
+    /**
+     * @return Raw value in the wrapper was constructed with
+     */
     public Number getRawValue() {
       return value;
     }

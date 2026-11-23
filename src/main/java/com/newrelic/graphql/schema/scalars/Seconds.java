@@ -11,7 +11,9 @@ import java.util.Map;
 /** Custom scalar representing a specific length of time in seconds */
 public class Seconds extends DurationWrapper<Seconds> {
 
-  /** @param value Number of seconds */
+  /**
+   * @param value Number of seconds
+   */
   public Seconds(Number value) {
     super(value, (n) -> buildDuration(n, 9));
   }
@@ -22,7 +24,9 @@ public class Seconds extends DurationWrapper<Seconds> {
     this(rawValueFromProps(props));
   }
 
-  /** @return Coercion instance for converting numbers to Seconds */
+  /**
+   * @return Coercion instance for converting numbers to Seconds
+   */
   public static Coercing<Seconds, Number> getCoercing() {
     return new NumberCoercing<Seconds>() {
       @Override

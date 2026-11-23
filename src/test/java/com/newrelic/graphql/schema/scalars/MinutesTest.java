@@ -4,7 +4,7 @@
  */
 package com.newrelic.graphql.schema.scalars;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.newrelic.graphql.mapper.GraphQLInputMapper;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MinutesTest {
 

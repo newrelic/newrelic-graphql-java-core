@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Coming soon
 
+## [1.0.0] - 2026-11-22
+### Breaking changes
+- Requires Java 17 or later.
+- Update to `graphql-java` 26.2. The scalar `Coercing` implementations (`NumberCoercing`, `StringCoercing` and subclasses) now implement the non-deprecated `serialize(Object, GraphQLContext, Locale)`, `parseValue(Object, GraphQLContext, Locale)` and `parseLiteral(Value, CoercedVariables, GraphQLContext, Locale)` methods. Code calling the deprecated single-argument variants directly must switch to the new signatures.
+
+### Changed
+- Update Jackson to 2.23.0.
+- Build with Gradle 9.9.2.
+- `graphql-java` and Jackson are now `api` dependencies (compile scope in the published POM), since their types appear in this library's public API.
+- Replace the unmaintained google-java-format gradle plugin with Spotless.
+- Migrate tests to JUnit 6.
+
 ## [0.3.0] - 2023-01-26
 - Update to `graphql-java` 20.0 [#27](https://github.com/newrelic/newrelic-graphql-java-core/pull/27)
 

@@ -35,7 +35,9 @@ public class GraphQLInputMapper {
   private final String packageName;
   private final ObjectMapper mapper;
 
-  /** @param packageName Package name to find the destination type in for conversion */
+  /**
+   * @param packageName Package name to find the destination type in for conversion
+   */
   public GraphQLInputMapper(String packageName) {
     this(
         packageName,
